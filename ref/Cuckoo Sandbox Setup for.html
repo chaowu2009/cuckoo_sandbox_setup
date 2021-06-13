@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<!-- saved from url=(0046)https://hatching.io/blog/cuckoo-sandbox-setup/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="robots" content="index, follow">
+    <meta name="description" content="Automated malware analysis with Hatching Triage, the high-volume sandbox solution for MSSPs, SOARs and CERTs.">
+    <meta name="keywords" content="Hatching, Hatching Triage, Cuckoo Sandbox, Cuckoo Support, Sandbox, Malware Analysis, Automated Malware Analysis">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="revisit-after" content="3 days">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@hatching_io">
+    <meta name="twitter:title" content="Hatching - Automated malware analysis solutions">
+    <meta property="og:title" content="Hatching - Automated malware analysis solutions">
+    <meta property="og:description" content="Automated malware analysis with Hatching Triage, the high-volume sandbox solution for MSSPs, SOARs and CERTs.">
+    <meta property="og:url" content="https://www.hatching.io">
+    
+    
+      <meta property="og:image" content="https://www.hatching.io/static/images/backgrounds/resized-11.jpg">
+      <meta name="twitter:image" content="https://www.hatching.io/static/images/backgrounds/resized-11.jpg">
+    
+    
+    <script type="text/javascript" async="" src="./Cuckoo Sandbox Setup for_files/analytics.js"></script><script async="" src="./Cuckoo Sandbox Setup for_files/js"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-123677703-1');
+    </script>
+
+    <link rel="stylesheet" href="./Cuckoo Sandbox Setup for_files/index.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://hatching.io/static/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://hatching.io/static/images/favicon-16x16.png">
+    <title>Cuckoo Sandbox Setup for People in a Hurry</title>
+  </head>
+  <body><nav class="site-menu">
+  <ul>
+    <li><a href="https://hatching.io/">Home</a></li>
+    <li><a href="https://hatching.io/about/">About</a></li>
+    <li><a href="https://hatching.io/triage/">Triage</a></li>
+    <li><a href="https://hatching.io/cuckoo/">Cuckoo</a></li>
+    <li><a class="active" href="https://hatching.io/blog/">Blog</a></li>
+    <li><a href="https://hatching.io/jobs/">Jobs</a></li>
+    <li><a onclick="window.openForm(event);">Contact</a></li>
+  </ul>
+</nav>
+<header class="site-nav headroom headroom--not-bottom headroom--not-top headroom--unpinned">
+  <div class="logo">
+    <a href="https://hatching.io/">
+      <svg width="432px" height="67px" viewBox="0 0 432 67" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <g fill="#FCC200" id="logo-squares">
+          <polygon points="44.8328629 22.3333333 67.1609528 22.3333333 67.1609528 0 44.8328629 0"></polygon>
+          <polygon points="44.8328629 67 67.1609528 67 67.1609528 44.6666667 44.8328629 44.6666667"></polygon>
+          <polygon points="22.504773 44.6666667 44.8328629 44.6666667 44.8328629 22.3333333 22.504773 22.3333333"></polygon>
+          <polygon points="0.159694382 22.3333333 22.4877843 22.3333333 22.4877843 0 0.159694382 0"></polygon>
+          <polygon points="0.159694382 67 22.4877843 67 22.4877843 44.6666667 0.159694382 44.6666667"></polygon>
+        </g>
+        <g fill="#000000" id="logo-text">
+          <polygon points="129.724212 0.000145652174 129.724212 21.1847688 110.375466 21.1847688 110.375466 0.000145652174 100.701578 0.000145652174 100.701578 51.312921 110.375466 51.312921 110.375466 29.9816746 129.724212 29.9816746 129.724212 51.312921 139.397614 51.312921 139.397614 0.000145652174"></polygon>
+          <path d="M161.746819,44.7159942 C168.195754,44.7159942 171.787178,40.9033058 171.787178,35.9195739 L171.787178,35.3330812 L160.647403,36.6522043 C157.202567,37.0920739 155.517282,38.3378855 155.517282,40.4644072 C155.517282,42.9570014 157.642333,44.7159942 161.746819,44.7159942 M164.678109,13.9280377 C174.57188,13.9280377 181.020814,19.5720594 181.020814,28.0752333 L181.020814,51.3130667 L171.933282,51.3130667 L171.933282,46.1817406 L170.907646,46.1817406 C169.734936,48.6015087 167.169632,52.3399145 159.474208,52.3399145 C151.266693,52.3399145 145.842909,47.9407333 145.842909,40.9775884 C145.842909,35.186458 150.899736,31.1538348 157.862217,30.4212043 L171.787178,28.8826319 L171.787178,28.0024072 C171.787178,24.5572478 169.148095,21.8452043 164.164563,21.8452043 C159.32859,21.8452043 156.323035,24.337313 154.051394,28.1490304 L146.576338,23.3109507 C150.899736,17.8858928 155.810459,13.9280377 164.678109,13.9280377"></path>
+          <path d="M193.476539,14.9544971 L193.476539,3.66451159 L202.710661,3.66451159 L202.710661,14.9544971 L212.678211,14.9544971 L212.678211,22.8711783 L202.710661,22.8711783 L202.710661,41.1966493 C202.710661,42.6633667 203.443604,43.3959971 204.762903,43.3959971 L210.625483,43.3959971 L210.625483,51.3131638 L200.658903,51.3131638 C196.554418,51.3131638 193.476539,48.3807 193.476539,44.2762217 L193.476539,22.8711783 L184.242903,22.8711783 L184.242903,14.9544971 L193.476539,14.9544971 Z"></path>
+          <path d="M235.1758,13.9279891 C245.28994,13.9279891 251.592286,19.5720109 253.49794,27.8557355 L244.409922,30.2017065 C243.750758,25.8034964 240.892277,22.1374312 235.322389,22.1374312 C229.752502,22.1374312 225.502398,26.5366123 225.502398,33.1341703 C225.502398,39.7307572 229.38603,44.1289674 235.322389,44.1289674 C240.892277,44.1289674 243.45758,40.9037428 244.409922,36.1389746 L253.49794,38.4121196 C251.738875,46.6943877 245.363234,52.3398659 235.1758,52.3398659 C224.62238,52.3398659 216.267791,44.4226993 216.267791,33.1341703 C216.267791,21.8451558 224.62238,13.9279891 235.1758,13.9279891"></path>
+          <path d="M268.445625,0 L268.445625,20.8185507 L269.325158,20.8185507 C270.791045,17.4462174 274.161616,14.3681014 280.831405,14.3681014 C288.892331,14.3681014 294.975279,20.1587464 294.975279,29.6144855 L294.975279,51.3127754 L285.741643,51.3127754 L285.741643,30.4951957 C285.741643,25.4371812 282.809868,22.4304348 277.533158,22.4304348 C271.596798,22.4304348 268.445625,26.0965 268.445625,32.5469493 L268.445625,51.3127754 L259.211504,51.3127754 L259.211504,0 L268.445625,0 Z"></path>
+          <path d="M302.740261,51.3127754 L311.974867,51.3127754 L311.974867,14.9541087 L302.740261,14.9541087 L302.740261,51.3127754 Z M307.357807,0.00291304348 C310.602175,0.00291304348 313.133016,2.27460145 313.133016,5.58478986 C313.133016,8.89497826 310.602175,11.1666667 307.357807,11.1666667 C304.112953,11.1666667 301.582112,8.89497826 301.582112,5.58478986 C301.582112,2.27460145 304.112953,0.00291304348 307.357807,0.00291304348 L307.357807,0.00291304348 Z"></path>
+          <path d="M329.269089,14.9544971 L329.269089,20.8184536 L330.294725,20.8184536 C331.761098,17.4461203 335.131669,14.3680043 341.800973,14.3680043 C349.862384,14.3680043 355.945332,20.1591348 355.945332,29.6143884 L355.945332,51.3131638 L346.711696,51.3131638 L346.711696,30.4950986 C346.711696,25.4370841 343.779921,22.4303377 338.502725,22.4303377 C332.566851,22.4303377 329.415678,26.0964029 329.415678,32.5468522 L329.415678,51.3131638 L320.180586,51.3131638 L320.180586,14.9544971 L329.269089,14.9544971 Z"></path>
+          <path d="M390.67988,32.5469978 C390.67988,25.9499254 386.429291,22.1377225 380.712814,22.1377225 C375.143412,22.1377225 370.745264,25.8033022 370.745264,32.5469978 C370.745264,39.291179 375.143412,42.9567587 380.712814,42.9567587 C386.429291,42.9567587 390.67988,39.1445558 390.67988,32.5469978 L390.67988,32.5469978 Z M399.914001,14.9546428 L399.914001,50.0670123 C399.914001,60.0364181 392.659313,67.0000486 381.224904,67.0000486 C371.257839,67.0000486 365.614657,62.4552152 361.950909,56.7378819 L369.718657,51.8998022 C371.624796,55.6386935 375.143412,59.0838529 380.638549,59.0838529 C386.355511,59.0838529 390.67988,56.1513891 390.67988,49.7009399 L390.67988,45.0094833 L389.800347,45.0094833 C387.895178,48.0875993 384.66974,51.1666862 378.220805,51.1666862 C369.133273,51.1666862 361.511142,43.3961428 361.511142,32.5469978 C361.511142,21.6983384 369.133273,13.9277949 378.220805,13.9277949 C384.66974,13.9277949 387.895178,17.0068819 389.800347,20.0849978 L390.826954,20.0849978 L390.826954,14.9546428 L399.914001,14.9546428 Z"></path>
+          <path transform="translate(407.730337, 0.000000)" d="M20.2679353,0.0142253623 L17.7739847,8.99853696 L17.5740027,8.99853696 L15.0800521,0.0142253623 L11.3391263,0.0142253623 L11.3391263,10.8541457 L13.4340836,10.8541457 L13.4340836,1.86983406 L13.6335802,1.86983406 L16.1280162,10.8541457 L19.220942,10.8541457 L21.7144072,1.86983406 L21.9143892,1.86983406 L21.9143892,10.8541457 L24.0093465,10.8541457 L24.0093465,0.0142253623 L20.2679353,0.0142253623 Z M0.364870112,0.0142253623 L0.364870112,1.86983406 L4.05628584,1.86983406 L4.05628584,10.8541457 L6.15124315,10.8541457 L6.15124315,1.86983406 L9.84217348,1.86983406 L9.84217348,0.0142253623 L0.364870112,0.0142253623 Z"></path>
+        </g>
+      </svg>
+    </a>
+  </div>
+  <div>
+    <a href="https://hatching.io/blog/cuckoo-sandbox-setup/#" class="toggle-menu">
+      Menu
+      <span></span>
+      <span></span>
+      <span></span>
+    </a>
+  </div>
+</header>
+
+
+<section class="scheme-1 view-context blog-fold blog-article-head" id="fold" data-keep="true">
+  <div class="view-context__body">
+    <div>
+      <div>
+        
+        <h2>Cuckoo Sandbox Setup for People in a Hurry</h2>
+      </div>
+      <ul>
+        <li>Share this:</li>
+        <li class="social">
+          <a href="https://twitter.com/hatching_io" target="_blank">
+            <i class="icon-twitter"></i>
+          </a>
+          <a href="https://www.linkedin.com/company/hatching" target="_blank">
+            <i class="icon-linkedin"></i>
+          </a>
+          <a href="https://www.github.com/hatching" target="_blank">
+            <i class="icon-github"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <h1>Blog.</h1>
+    </div>
+  </div>
+  <div class="background-graphic">
+    
+      <div class="image in" style="background-image: url(&#39;/static/images/backgrounds/resized-11.jpg&#39;);"></div>
+    
+  </div>
+</section>
+
+<article class="view-context blog-article">
+  <header class="blog-article-meta">
+    <div class="blog-article-general">
+      <p><time datetime="2019-07-03T00:00:00Z">2019-07-03</time></p>
+        
+          <ul class="blog-article-tags">
+            <li><p>blog post</p></li><li><p>cuckoo sanndbox</p></li><li><p>sandbox</p></li><li><p>installation</p></li><li><p>guide</p></li><li><p>cuckoo</p>
+          </li></ul>
+        
+    </div>
+    <div class="blog-article-author">
+      <div class="avatar">
+        <img src="./Cuckoo Sandbox Setup for_files/ricardo.svg">
+      </div>
+      <div>
+        <h5>Written by <br>Alwin Peppels and Ricardo van Zutphen</h5>
+      </div>
+    </div>
+  </header>
+  <section class="blog-article-body">
+    
+      <h2 id="introduction">Introduction</h2>
+<p>This blog post aims to provide a straightforward install for Cuckoo that is
+easy to follow, using as much of the built-in automation as possible.</p>
+<p>The first part of the guide will be setting up a basic install that should be
+sufficient for a single-user setup with a low number of machines.</p>
+<p>For people who want to run Cuckoo on more resources, or run a production web
+interface for multiple people, some different dependencies have to be used.
+When using parallel results processing and multiple VMs, SQLite should be
+replaced with a DBMS such as Postgres, which handles multiple processes more
+reliably. The development web server can be replaced with uWSGI + nginx. This
+is discussed in the <em>Cuckoo Web Interface</em> section of this blog post.</p>
+<p>This setup guide is tested to work on a clean install of Ubuntu 18.04 LTS, on
+other distros your mileage may vary.</p>
+<p>We will install VirtualBox, set up a virtualenv for Python and create a
+low-privilege user for cuckoo. Then create the analysis VMs using <a href="https://vmcloak.readthedocs.io/en/latest/index.html">VMCloak</a>
+to automatically install Windows 7, software, and to create snapshots, after
+which we will use the built-in ‘cuckoo machine’ command to add them to the
+configuration.</p>
+<p>First of all, let’s get our package manager up-to-date, install virtualenv, and
+make sure we have the right core tools installed:</p>
+<pre><code>sudo apt-get update
+sudo apt-get -y install python virtualenv python-pip python-dev build-essential
+</code></pre>
+<p>Secondly, we will create a new user to run Cuckoo under. Running Cuckoo under
+a separate user is important for a safe setup, we’re dealing with malware; if
+a vulnerability is found and exploited it will be harder to compromise the
+whole machine from a low-privileged user:</p>
+<pre><code>sudo adduser --disabled-password --gecos "" cuckoo
+</code></pre>
+<p>The user should be able to create network dumps during Cuckoo analyses, so we
+give it permission to do so:</p>
+<pre><code>sudo groupadd pcap
+sudo usermod -a -G pcap cuckoo
+sudo chgrp pcap /usr/sbin/tcpdump
+sudo setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump
+</code></pre>
+<p>One more step before we start, we need a Windows 7 ISO. Let’s download one that
+we found and know that it works. After downloading, we have to mount the ISO to
+be used at a later step:</p>
+<pre><code>wget https://cuckoo.sh/win7ultimate.iso
+mkdir /mnt/win7
+sudo mount -o ro,loop win7ultimate.iso /mnt/win7
+</code></pre>
+<h2 id="installing-virtualbox">Installing VirtualBox</h2>
+<p>We will install VirtualBox from the VirtualBox repository, as this allows for
+easier upgrading to newer releases. It is important to install updates for the
+virtualization layer, as they might include security updates. Especially for
+VirtualBox, which has seen numerous 0day vulnerabilities in the last years,
+it’s important to run the latest version of VirtualBox 5 or VirtualBox 6 (at
+the time of writing, this would be either 5.2.30 or 6.0.8).</p>
+<p>First, we add the repository keys:</p>
+<pre><code>wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
+wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
+</code></pre>
+<p>Adding the VirtualBox repository:</p>
+<pre><code>sudo add-apt-repository "deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib"
+</code></pre>
+<p>Let’s update the package list and download VirtualBox. Doing so will allow us
+to install the latest version of VirtualBox 5.2 or 6.0, whichever is
+preferable. After the installation, we add the cuckoo user to the vboxusers
+group:</p>
+<pre><code>sudo apt-get update
+sudo apt-get install virtualbox-5.2
+sudo usermod -a -G vboxusers cuckoo
+</code></pre>
+<p>Or for VirtualBox 6.0:</p>
+<pre><code>sudo apt-get update
+sudo apt-get install virtualbox-6.0
+sudo usermod -a -G vboxusers cuckoo
+</code></pre>
+<h2 id="cuckoo-and-vmcloak-installation">Cuckoo and VMCloak installation</h2>
+<p>Before we install Cuckoo and VMCloak, the installation of multiple packages is
+required. These are dependencies VMCloak or Cuckoo require to function.</p>
+<p>VMCloak and Cuckoo required packages:</p>
+<pre><code>sudo apt-get -y install build-essential libssl-dev libffi-dev python-dev genisoimage
+sudo apt-get -y install zlib1g-dev libjpeg-dev
+sudo apt-get -y install python-pip python-virtualenv python-setuptools swig
+</code></pre>
+<p>Now that the dependencies have been installed, we can install Cuckoo and VMCloak.
+Start by switching to the cuckoo user and creating a new virtualenv:</p>
+<pre><code>sudo su cuckoo
+virtualenv ~/cuckoo
+. ~/cuckoo/bin/activate
+</code></pre>
+<p>The virtualenv will allow us to install dependencies within our home directory and to prevent interference with other, globally installed, Python packages.</p>
+<p>Install both VMCloak and Cuckoo Sandbox within the same virtualenv:</p>
+<pre><code>pip install -U cuckoo vmcloak
+</code></pre>
+<h3 id="automatic-vm-creation">Automatic VM creation</h3>
+<p>Manually installing Windows, required software, editing registry keys, etc is a
+lot of work. Luckily, we don’t have to do that because we will use
+<a href="https://vmcloak.readthedocs.io/en/latest/index.html">VMCloak</a>!</p>
+<p>First, start by defining and instantiating a VirtualBox Host-Only network
+adapter for the VMs to use:</p>
+<pre><code>vmcloak-vboxnet0
+</code></pre>
+<p>To set up a Windows VM, we will use the ISO that we mounted earlier. VMCloak
+will try /mnt/win7 (and /mnt/win7x64) by default. The following step will
+create the VM and automatically install Windows. This step will take
+approximately 15 to 20 minutes. A Cuckoo analysis VM should have at least 2GB
+of memory and preferably two or more CPU cores.</p>
+<p>The syntax of the command we will use is: <code>vmcloak init &lt;os flag&gt; &lt;vmname&gt; &lt;options&gt;</code>:</p>
+<pre><code>vmcloak init --verbose --win7x64 win7x64base --cpus 2 --ramsize 2048
+</code></pre>
+<p>After VMCloak is finished we can start installing software that should be
+present in VM snapshots. When we have created snapshots of an image, it can no
+longer be changed, therefore we clone the cleanly installed base image so we
+can install software on the clone and snapshot that:</p>
+<pre><code>vmcloak clone win7x64base win7x64cuckoo
+</code></pre>
+<p>VMCloak supports the installation of multiple software packages. A full list of
+supported packages and versions can be listed:</p>
+<pre><code>vmcloak list deps
+</code></pre>
+<p>A software package can be installed with the following syntax: <code>vmcloak install &lt;image name&gt; &lt;package&gt;</code>.
+A specific version or a serialkey can be provided by adding:
+<code>package.version=X</code> or <code>package.serialkey=X</code>. If no version is
+selected, the default version will be picked. We will be installing some basic
+software packages:</p>
+<pre><code>vmcloak install win7x64cuckoo adobepdf pillow dotnet java flash vcredist vcredist.version=2015u3 wallpaper
+</code></pre>
+<p>Optional step: installing Internet Explorer 11:</p>
+<pre><code>vmcloak install win7x64cuckoo ie11
+</code></pre>
+<p>Optional step: Installing a Microsoft Office version so that Office document
+can be analyzed. Office 2007 is most likely to work, some builds of higher
+versions of Office sometimes cause issues with the <a href="https://cuckoo-monitor.readthedocs.io/en/latest/">Cuckoo Monitor</a><a href="https://cuckoo-monitor.readthedocs.io/en/latest/">Cuckoo
+Monitor</a>:</p>
+<pre><code>vmcloak install win7x64cuckoo office office.version=2007 office.isopath=/path/to/office2007.iso office.serialkey=XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+</code></pre>
+<p>When finished with installing software packages, we can create the VM
+snapshots. VMCloak will register a VirtualBox VM for each snapshot created.
+After snapshotting, it is no longer possible to change the image. The syntax
+of the snapshot command is: <code>vmcloak snapshot &lt;options&gt; &lt;image name&gt; &lt;vmname&gt; &lt;ip to use&gt;</code></p>
+<p>Using the <code>--count</code> parameter, we can create multiple snapshots at once.
+Let’s create four:</p>
+<pre><code>vmcloak snapshot --count 4 win7x64cuckoo 192.168.56.101
+</code></pre>
+<p>This command will create VMs <code>win7x64cuckoo1-4</code> with IPs <code>192.168.56.101-104</code>.</p>
+<p>After VMCloak is finished, the VMs can be listed using:</p>
+<pre><code>vmcloak list vms
+</code></pre>
+<h3 id="configuring-cuckoo">Configuring Cuckoo</h3>
+<p>Cuckoo loads its configuration files, signatures, and other user-changeable
+files from its <em>Cuckoo Working Directory</em> (CWD). By default this will be
+<code>$USERHOME/.cuckoo</code>. Before we can use Cuckoo, we first have to create
+this directory:</p>
+<pre><code>cuckoo init
+</code></pre>
+<p>If a custom CWD is desired, the <code>--cwd &lt;path&gt;</code> option must be used upon
+creation and must be supplied when using Cuckoo commands, e.g.:</p>
+<pre><code>cuckoo --cwd /tmp/cuckoo init
+</code></pre>
+<h2 id="postgres-as-dbms">Postgres as DBMS</h2>
+<p>You can skip this section and jump to [Adding VMs][Adding VMs] if you are not using more
+than a couple of analysis VMs and will not be using Cuckoo processing instances.</p>
+<p>First, start by installing Postgres if it is not already installed:</p>
+<pre><code>sudo apt-get postgresql postgresql-contrib
+</code></pre>
+<p>Then we install the Postgres database driver for Cuckoo:</p>
+<pre><code>pip install psycopg2
+</code></pre>
+<p>Now let’s create a user and database for Cuckoo to use:</p>
+<pre><code>sudo -u postgres psql
+CREATE DATABASE cuckoo;
+CREATE USER cuckoo WITH ENCRYPTED PASSWORD 'password';
+GRANT ALL PRIVILEGES ON DATABASE cuckoo TO cuckoo;
+\q
+</code></pre>
+<p>After that, we have to tell Cuckoo to use Postgres instead of SQLite. Open the
+<code>$CWD/conf/cuckoo.conf</code> file and find the <code>[database]</code> section.
+Change the <code>connection =</code> line to:</p>
+<pre><code>connection = postgresql://cuckoo:password@localhost/cuckoo
+</code></pre>
+<h2 id="adding-vms">Adding VMs</h2>
+<p>We are using VirtualBox in our setup, this is the default <a href="https://cuckoo.sh/docs/installation/host/configuration.html#machinery-conf">Machinery module</a> that Cuckoo uses. We have to remove some default settings from its
+configuration file <code>virtualbox.conf</code>.</p>
+<p>All Cuckoo configuration files can be found at <code>$CWD/conf/</code>. Open
+<code>$CWD/conf/virtualbox.conf</code> and remove the entries in the
+<code>machines = cuckoo1</code> line.</p>
+<p>Time to add the created VMs to Cuckoo. We will use the <code>cuckoo machine --add &lt;vm name&gt; &lt;ip&gt;</code> to tell Cuckoo to add the machine to its configuration. This has to be done for each machine, so let’s make life easier and use <code>vmcloak list vms</code>:</p>
+<pre><code>while read -r vm ip; do cuckoo machine --add $vm $ip; done &lt; &lt;(vmcloak list vms)
+</code></pre>
+<p>To install the Cuckoo signatures and latest monitor, we run the following command:</p>
+<pre><code>cuckoo community --force
+</code></pre>
+<h2 id="network-configuration">Network configuration</h2>
+<p>Next, providing analysis VMs with an internet connection.</p>
+<p>Internet on the VMs is not required, however, not having an internet connection restricts malware from retrieving data such payloads and instructions. This can affect the accuracy of the analysis results.</p>
+<p>Configuring traffic forwarding can be done globally or on a per-analysis basis. The latter requires more steps, so we will start with the global forwarding rules.</p>
+<p>First, switch to an account that has root privileges and enable forwarding. Do
+this for the <code>vboxnet0</code> interface and the outgoing interface. We will be
+using <code>eth0</code> as a dummy value here. Replace it with your outgoing
+interface (which can be identified through, e.g., <code>ifconfig</code>):</p>
+<pre><code>sudo sysctl -w net.ipv4.conf.vboxnet0.forwarding=1
+sudo sysctl -w net.ipv4.conf.eth0.forwarding=1
+</code></pre>
+<h3 id="global-forwarding-rules">Global forwarding rules</h3>
+<p>To enable global routing for all VMs connected to the vboxnet0 interface, use the following rules:</p>
+<pre><code>sudo iptables -t nat -A POSTROUTING -o eth0 -s 192.168.56.0/24 -j MASQUERADE
+sudo iptables -P FORWARD DROP
+sudo iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -s 192.168.56.0/24 -j ACCEPT
+</code></pre>
+<h3 id="per-analysis-routing---advanced">Per-analysis routing - Advanced</h3>
+<p>Cuckoo allows for <a href="https://cuckoo.sh/docs/installation/host/routing.html#per-analysis-network-routing-options">multiple types</a> of per-analysis routes,
+among which are ‘internet’ and ‘none’. The route can be specified whens
+submitting an analysis.</p>
+<p>To accomplish per-analysis routing, Cuckoo uses the
+<a href="https://cuckoo.sh/docs/usage/rooter.html">Cuckoo Rooter</a>. This is a separate process that runs with root
+privileges and is able to execute pre-defined commands.</p>
+<p>We start by creating a Cuckoo Rooter process. This creates a UNIX socket owned
+by root and giving the ‘cuckoo’ group permission to use it. <strong>Do not run these
+commands with sudo</strong>. The <code>--sudo</code> flag will take care of this:</p>
+<pre><code>cuckoo rooter --sudo --group cuckoo
+</code></pre>
+<p>Since Cuckoo is installed in a virtualenv, and the Cuckoo user should not have root privileges, we can do the following from a root privileged user:</p>
+<pre><code>/home/cuckoo/cuckoo/bin/cuckoo rooter --sudo --group cuckoo
+</code></pre>
+<p>Next, we have to edit <code>$CWD/conf/routing.conf</code> to tell Cuckoo what our
+outgoing interface is. Open routing.conf and change <code>internet = none</code> to
+<code>internet = eth0</code>.</p>
+<p>This config file also contains a <code>route = none</code> line. This is the
+default routing it will use. This can be changed to <code>internet</code> to give
+each analysis internet access, unless a different routing option is provided
+upon sample submission. A command line submission example:
+<code>cuckoo submit &lt;file path&gt; --options "route=internet"</code>.</p>
+<p>Note: if the routing configuration is changed to support per-analysis routing,
+Cuckoo requires the Cuckoo Rooter to be running and will not start otherwise.</p>
+<h2 id="the-cuckoo-web-interface">The Cuckoo Web Interface</h2>
+<p>The Cuckoo web interface can be used to submit new tasks and view analysis results. It requires MongoDB to be installed and enabled in the <code>reporting.conf</code>.</p>
+<p>If MongoDB is not installed, start by installing it:</p>
+<pre><code>sudo apt-get install mongodb
+</code></pre>
+<p>The web interface can be used by starting the built-in development server or by configuring a uWSGI + NGINX setup for a production environment.</p>
+<p>Results will only show if they have been processed after MongoDB has been
+enabled. As Cuckoo will not store them in there by default.</p>
+<p>We start by opening <code>$CWD/conf/reporting.conf</code> and find the
+<code>[MongoDB]</code> section. Change <code>enabled = no</code> to
+<code>enabled = yes</code>.
+No further configuration changes are required, unless your MongoDB setup
+requires a user, runs on a non-standard port, or runs remotely.</p>
+<p>The built-in web server</p>
+<p>This server should not be used for production environments. It is a development server. It can be used for small setups, but should not be exposed to the internet.</p>
+<p>The server can be started by running:</p>
+<pre><code>cuckoo web --host 127.0.0.1 --port 8080
+</code></pre>
+<p>We can now submit tasks and view results in the web interface. Cuckoo must be
+running for analyses to start, otherwise tasks will remain on the <em>pending</em>
+status.</p>
+<h3 id="using-uwsgi-and-nginx---advanced">Using uWSGI and nginx - Advanced</h3>
+<p>Cuckoo web can be set up to be served by nginx. This greatly increases the
+maximum amount of users a Cuckoo web interface can have at one time, and
+allows for the usage of TLS.</p>
+<p>To run Cuckoo web with uWSGI, we must first install the <code>uwsgi</code> Python dependency in the virtualenv where we installed Cuckoo:</p>
+<pre><code>pip install uwsgi
+</code></pre>
+<p>After this, ensure the following packages are installed:</p>
+<pre><code>sudo apt-get install uwsgi uwsgi-plugin-python nginx
+</code></pre>
+<p>Cuckoo can generate the configurating files for uWSGI and nginx. First, let’s set up uWSGI:</p>
+<pre><code>cuckoo web --uwsgi &gt; cuckoo-web.ini
+sudo cp cuckoo-web.ini /etc/uwsgi/apps-available/cuckoo-web.ini
+sudo ln -s /etc/uwsgi/apps-available/cuckoo-web.ini /etc/uwsgi/apps-enabled/cuckoo-web.ini
+</code></pre>
+<p>Ensure that the <code>www-data</code> user can read the Cuckoo web files by adding it to the cuckoo group:</p>
+<pre><code>sudo adduser www-data cuckoo
+sudo systemctl restart uwsgi
+</code></pre>
+<p>Second, let’s set up nginx. The generated nginx configuration contains values that you might want to change, such as the listening IP and port:</p>
+<pre><code>cuckoo web --nginx &gt; cuckoo-web.conf
+sudo cp cuckoo-web.conf /etc/nginx/sites-available/cuckoo-web.conf
+sudo ln -s /etc/nginx/sites-available/cuckoo-web.conf /etc/nginx/sites-enabled/cuckoo-web.conf
+sudo systemctl restart nginx
+</code></pre>
+<p>The web interface should be served by nginx now.</p>
+<h2 id="starting-cuckoo">Starting Cuckoo</h2>
+<p>When Cuckoo starts for the first time, it creates the required database tables in the configured database type. By default this is SQLite.</p>
+<p>Let’s start Cuckoo now. If we enable debug mode, we can see all the steps it
+takes along the way of starting:</p>
+<pre><code>cuckoo --debug
+</code></pre>
+<p>After starting, it will either start analyzing submitted files or display <em>waiting for analyses..</em>.</p>
+<h3 id="cuckoo-processing-instances---advanced">Cuckoo processing instances - Advanced</h3>
+<p>When using 4+ VMs, it is recommended to use Cuckoo processing instances. These
+are separate processes that perform all results processing and reporting.</p>
+<p>Normally, the processing is part of the analysis flow and performed by the main
+Cuckoo process. Having a lot VMs can cause a large backlog of analysis results
+to be processed. By moving this process to multiple dedicated processes, this
+problem is prevented. For more information about this, see the <a href="https://cuckoo.sh/docs/usage/utilities.html#cuckoo-process">processing
+instance documentation</a>.</p>
+<p>Before starting processing instances, we must first configure Postgres (see
+[Postgres as DBMS][Postgres as DBMS].) and disable processing of results in the
+main Cuckoo process. Open the <code>cuckoo.conf</code> and change <code>process_results = yes</code>
+to <code>process_results = no</code>.</p>
+<p>We can now start one or more processing instances. The syntax of the command is <code>cuckoo process &lt;instance name&gt;</code>:</p>
+<pre><code>cuckoo process p1
+</code></pre>
+<p>The instance(s) will process tasks that reach the <em>completed</em> status.</p>
+<h3 id="starting-cuckoo-in-the-background---advanced">Starting Cuckoo in the background - Advanced</h3>
+<p>It might be desirable to run Cuckoo and supporting processes in the
+background. This is possible with <code>supervisord</code>. Cuckoo generates a
+<code>supervisord.conf</code> file for this in the CWD. This configuration starts
+Cuckoo and 4 processing instances, no other Cuckoo components. This
+configuration assumes the required changes in <code>cuckoo.conf</code> has already
+been made. For the full documentation on this, see the <a href="https://cuckoo.sh/docs/usage/start.html#cuckoo-in-the-background">cuckoo supervisord</a>
+docs.</p>
+<p>To start setting up Cuckoo with supervisord, let’s start by installing supervisord:</p>
+<pre><code>sudo apt-get install supervisord
+</code></pre>
+<p>We start by telling supervisord what configuration to use:</p>
+<pre><code>supervisord -c /home/cuckoo/.cuckoo/supervisord.conf
+</code></pre>
+<p>Now we can now start Cuckoo as a background process and stop it when we want:</p>
+<pre><code>supervisorctl start cuckoo:
+supervisorctl stop cuckoo:
+</code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>After following the above steps, one may now enjoy a fully functional Cuckoo
+Sandbox setup with multiple VMs, network routing capabilities, the Cuckoo Web
+Interface, and potentially more goodies. Don’t forget to check out the
+extensive <a href="https://cuckoo.sh/docs/">Cuckoo Sandbox documentation</a> and let us know if there are
+questions and/or feedback.</p>
+<p>Looking for Cuckoo Sandbox support? <a href="https://hatching.io/solutions">Check our solutions</a>.</p>
+
+    
+  </section>
+</article>
+
+
+<section class="view-context blog-recommendations">
+  <article class="view-context__body">
+    <h2>You may also like:</h2>
+    
+    <ul>
+      
+        <li>
+          <h3>Release of Cuckoo-compatible onemon Windows kernel driver</h3>
+          <br>
+          <a class="button button-variant-3" href="https://hatching.io/blog/onemon-cuckoo-release/">Read</a>
+        </li>
+      
+        <li>
+          <h3>Jobs</h3>
+          <br>
+          <a class="button button-variant-3" href="https://hatching.io/jobs/">Read</a>
+        </li>
+      
+        <li>
+          <h3>General Family Updates</h3>
+          <br>
+          <a class="button button-variant-3" href="https://hatching.io/blog/tt-2020-10-08/">Read</a>
+        </li>
+      
+        <li>
+          <h3>New Integrations, Updated DLL Handling and New Family Classifications</h3>
+          <br>
+          <a class="button button-variant-3" href="https://hatching.io/blog/tt-2020-10-29/">Read</a>
+        </li>
+      
+    </ul>
+  </article>
+</section>
+    <footer class="scheme-4 view-context footer" id="contact">
+      <article class="view-context__body">
+        <h2>Want to know more?<br>Get in touch!</h2>
+        <a class="button button-variant-1 form-activate" href="https://hatching.io/blog/cuckoo-sandbox-setup/#" i="">Contact us</a>
+        <ul>
+          <li>
+            <ul>
+              <li class="logo"><img src="./Cuckoo Sandbox Setup for_files/logo-light.svg"></li>
+              <li class="social">
+                <a href="https://twitter.com/hatching_io" target="_blank">
+                  <i class="icon-twitter"></i>
+                </a>
+                <a href="https://www.linkedin.com/company/hatching" target="_blank">
+                  <i class="icon-linkedin"></i>
+                </a>
+                <a href="https://www.github.com/hatching" target="_blank">
+                  <i class="icon-github"></i>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            Hatching International B.V.<br>
+            Korte Hogendijk 4<br>
+            1506 MA  Zaandam<br>
+            The Netherlands<br>
+            <br>
+            Call us: +31 75 207 30 90<br>
+            Email us: <a href="mailto:info@hatching.io">info@hatching.io</a>
+          </li>
+          <li>
+            IBAN: NL52 INGB 0006 9672 73<br>
+            BIC: INGBNL2A<br>
+            ING Groep N.V.<br>
+            Amsterdam-Zuidoost<br>
+            <br>
+            REG: 64146707<br>
+            VAT:  NL855541891B01
+          </li>
+        </ul>
+      </article>
+      <div class="form hidden">
+        <div class="form-logo">
+          <img src="./Cuckoo Sandbox Setup for_files/logo-light.svg" alt="Hatching">
+        </div>
+        <a href="https://hatching.io/blog/cuckoo-sandbox-setup/#" class="form-close" title="Close (or press esc)"></a>
+
+        <div class="container">
+          <h1>Contact us</h1>
+          <h3>Feel free to inquire or request about our services.</h3>
+          <form>
+            <fieldset>
+              <div class="field">
+                <div class="input is-required">
+                  <input id="form-name" name="name" placeholder="Name" style="background-image: url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABHklEQVQ4EaVTO26DQBD1ohQWaS2lg9JybZ+AK7hNwx2oIoVf4UPQ0Lj1FdKktevIpel8AKNUkDcWMxpgSaIEaTVv3sx7uztiTdu2s/98DywOw3Dued4Who/M2aIx5lZV1aEsy0+qiwHELyi+Ytl0PQ69SxAxkWIA4RMRTdNsKE59juMcuZd6xIAFeZ6fGCdJ8kY4y7KAuTRNGd7jyEBXsdOPE3a0QGPsniOnnYMO67LgSQN9T41F2QGrQRRFCwyzoIF2qyBuKKbcOgPXdVeY9rMWgNsjf9ccYesJhk3f5dYT1HX9gR0LLQR30TnjkUEcx2uIuS4RnI+aj6sJR0AM8AaumPaM/rRehyWhXqbFAA9kh3/8/NvHxAYGAsZ/il8IalkCLBfNVAAAAABJRU5ErkJggg==&quot;); background-repeat: no-repeat; background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%;">
+                </div>
+              </div>
+              <div class="field">
+                <div class="input is-required">
+                  <input id="form-email" name="email" placeholder="Email">
+                </div>
+              </div>
+              <div class="field">
+                <div class="input">
+                  <input id="form-phone" name="phone" placeholder="Phone number">
+                </div>
+              </div>
+              <div class="field">
+                <div class="input">
+                  <input id="form-company" name="company" placeholder="Company">
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <div class="input required">
+                <textarea id="form-message" name="message" placeholder="Write a message"></textarea>
+              </div>
+              <div class="button-group">
+                <button type="reset" class="button button-variant-2 button-transparent">Reset</button>
+                <button type="submit" class="button button-variant-1">Send</button>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+
+      </div>
+    </footer>
+    <script src="./Cuckoo Sandbox Setup for_files/hatching.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          if(window.main && window.main instanceof Function) {
+            window.main();
+          }
+          initForm();
+
+          
+          
+        });
+    </script>
+  
+
+</body></html>
