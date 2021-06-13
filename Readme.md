@@ -1,5 +1,5 @@
 These scripts are helping people to set up Cuckoo Sandbox with Ubuntu 18 with four easy steps.
-You don't need type one command after another.
+You don't need type one command after another. Welcome to pull and make it more robust and hanle exceptions.
 # To start: 
 1. create a cuckoo account in your Ubuntu. Then log in using cuckoo account
 2. Step 1 -> 2->3->4
