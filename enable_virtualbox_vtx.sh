@@ -1,1 +1,2 @@
-VBoxManage modifyvm ubuntu 18.04 --nested-hw-virt on
+VBoxManage list vms
+VBoxManage modifyvm "your vms id" --nested-hw-virt on
